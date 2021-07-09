@@ -3,9 +3,11 @@ const Schema = mongoose.Schema;
 
 const exerciseSchema = new Schema(
   {
-    username: { type: String, required: true },
+    exercise_name: { type: String, required: true },
     description: { type: String, requiredL: true },
     reps: { type: Number, required: true },
+    link: { type: String },
+    tags: [String]
   },
   {
     timestamps: true,

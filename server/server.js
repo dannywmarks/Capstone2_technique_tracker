@@ -34,3 +34,5 @@ app.use("/users", userRouter);
 app.listen(port, () => {
   console.log(`server is listening on ${port}`);
 });
+
+module.exports = app;
