@@ -96,6 +96,8 @@ const Form = ({ currentId, setCurrentId }) => {
           variant="outlined"
           label="Description"
           fullWidth
+          multiline 
+          rows={4}
           value={description}
           onChange={handleChange}
         />

@@ -8,6 +8,8 @@ const {
   deleteExercise,
 } = require("../controllers/exercise");
 
+const auth = require('../middleware/auth')
+
 // GET: /exercises
 router.get("/", getExercises);
 
@@ -21,6 +23,6 @@ router.post("/", addExercise);
 router.patch("/:id", updateExercise);
 
 //DELETE an exercise
-router.delete("/:id", deleteExercise);
+router.delete("/:id", auth, deleteExercise);
 
 module.exports = router;
