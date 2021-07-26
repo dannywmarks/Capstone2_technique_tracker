@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { validateToken } = require("../utils/tokens");
 
 const auth = async (req, res, next) => {
   try {
@@ -8,7 +9,7 @@ const auth = async (req, res, next) => {
     let decodedData;
 
     if (token && isCustomAuth) {
-      decodedData = jwt.verify(token, "test");
+      decodedData = validateToken(token);
 
       req.userId = decodedData.id;
     } else {
@@ -23,4 +24,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth
+module.exports = auth;

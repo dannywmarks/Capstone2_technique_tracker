@@ -1,18 +1,38 @@
-const expect = require("chai").expect;
+process.env.NODE_ENV = "test";
+// node --inspect-brk $(which jest) --runInBand NAME_OF_FILE
+
 const request = require("supertest");
 
-const server = require("../server")
+const app = require("../app");
+const mongoose = require("mongoose");
 
-var app = request.agent(server);
+const databaseName = "test";
 
-// let helloWorld = testFunction.helloWorld();
-// let multiply = testFunction.multiply(8,2)
-
-// console.log(helloWorld);
-
-describe("Post", () => {
-  describe("Adding new Exercise", () => {
-    it("Success should return 200", () => {
-      expect(helloWorld).to.equal("Hello World!");
-   
+beforeEach(async function () {
+  const url = `mongodb://127.0.0.1/${databaseName}`;
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 });
+
+afterEach(function () {
+  // makes sure this *mutates*, not redefines, `cats`
+});
+
+afterAll(() => mongoose.disconnect());
+
+describe("GET /exercises", () => {
+  test("Get all exercises", async () => {
+    const response = await request(app).get("/exercises");
+    expect(response.statusCode).toBe(200);
+    // expect(response.body).toEqual({ exercise_name: ["Burpees"] });
+  });
+});
+
+// describe("POST /exercises", () => {
+//   test("Create  new exercise", async () => {
+//     const response = await request(app).post({ exercise_name: "pull-ups" });
+//     expect(response.statusCode).toBe(201);
+//   });
+// });

@@ -15,7 +15,7 @@ import { AUTH } from "../../constants/actionTypes";
 import useStyles from "./styles";
 import Input from "./Input";
 import Icon from "./icon";
-import {signup, signin} from '../../actions/auth'
+import { signup, signin } from "../../actions/auth";
 
 const initialState = {
   firstName: "",
@@ -47,12 +47,12 @@ const Auth = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
 
   const handleChange = (e) => {
-    setFormData({ ...setFormData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const switchMode = () => {
     setIsSignup((prevIsSignup) => !prevIsSignup);
-    handleShowPassword(false);
+    setShowPassword(false);
   };
 
   const googleSuccess = async (res) => {
@@ -107,6 +107,7 @@ const Auth = () => {
             <Input
               name="password"
               label="Password"
+              autocomplete="new-password"
               handleChange={handleChange}
               type={showPassword ? "text" : "password"}
               handleShowPassword={handleShowPassword}
@@ -115,7 +116,8 @@ const Auth = () => {
               <Input
                 name="confirmPassword"
                 label="Repeat Password"
-                handlechange={handleChange}
+                autocomplete="current-password"
+                handleChange={handleChange}
                 type="password"
               />
             )}

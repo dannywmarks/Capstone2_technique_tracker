@@ -6,10 +6,14 @@ const {
   addExercise,
   updateExercise,
   deleteExercise,
+  getExercisesBySearch,
+  commentExercise
 } = require("../controllers/exercise");
 
-const auth = require('../middleware/auth')
+const auth = require("../middleware/auth");
 
+// SEARCH
+router.get("/search", getExercisesBySearch);
 // GET: /exercises
 router.get("/", getExercises);
 
@@ -17,10 +21,13 @@ router.get("/", getExercises);
 router.get("/:id", getExercise);
 
 // POST /exercises/add
-router.post("/", addExercise);
+router.post("/", auth, addExercise);
+
+// POST /exercises/add
+router.post("/:id/commentExercise", auth, commentExercise);
 
 //UPDATE edit or modify an exercise
-router.patch("/:id", updateExercise);
+router.patch("/:id",auth, updateExercise);
 
 //DELETE an exercise
 router.delete("/:id", auth, deleteExercise);

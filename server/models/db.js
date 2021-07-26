@@ -1,7 +1,3 @@
-
-
-const app = require('./app')
-const port = process.env.PORT;
 const mongoose = require("mongoose");
 
 
@@ -16,8 +12,4 @@ mongoose.connect(uri, {
 const connection = mongoose.connection;
 connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
-});
-
-app.listen(port, () => {
-  console.log(`server is listening on ${port}`);
 });

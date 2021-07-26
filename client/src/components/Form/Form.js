@@ -5,23 +5,25 @@ import { useSelector } from "react-redux";
 import { addExercise, updateExercise } from "../../actions/exercises";
 import useStyles from "./styles";
 
-const Form = ({ currentId, setCurrentId }) => {
-  let initialState = {
-    exercise_name: "",
-    reps: "",
-    link: "",
-    description: "",
-    tags: [],
-  };
+let initialState = {
+  exercise_name: "",
+  reps: "",
+  link: "",
+  description: "",
+  tags: [],
+};
 
+const Form = ({ currentId, setCurrentId }) => {
   const [exerciseData, setExerciseData] = useState(initialState);
   const exercise = useSelector((state) =>
     currentId
-      ? state.exercises.find((exercise) => exercise._id === currentId)
+      ? state.exercises.exercises.find((exercise) => exercise._id === currentId)
       : null
   );
   const dispatch = useDispatch();
   const classes = useStyles();
+  const user = JSON.parse(localStorage.getItem("profile"));
+  
 
   // on load, checking if exercise is in app state, and if there is an exercise loading in form state
   useEffect(() => {
@@ -45,19 +47,29 @@ const Form = ({ currentId, setCurrentId }) => {
     e.preventDefault();
 
     if (currentId === 0) {
-      dispatch(addExercise(exerciseData));
+      dispatch(addExercise({ ...exerciseData, name: user?.result?.name }));
       clear();
     } else {
-      dispatch(updateExercise(currentId, exerciseData));
+      dispatch(updateExercise(currentId, { ...exerciseData, name: user?.result?.name }));
       clear();
     }
   };
+
+  if(!user?.result?.name) {
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align="center">
+          Please Sign In to add your own exercises.
+        </Typography>
+      </Paper>
+    )
+  }
 
   // destructured values from exerciseData
   const { exercise_name, reps, link, description, tags } = exerciseData;
 
   return (
-    <Paper>
+    <Paper className={classes.paper} elevation={6}>
       <form
         className={`${classes.root} ${classes.form}`}
         autoComplete="off"
@@ -96,7 +108,7 @@ const Form = ({ currentId, setCurrentId }) => {
           variant="outlined"
           label="Description"
           fullWidth
-          multiline 
+          multiline
           rows={4}
           value={description}
           onChange={handleChange}
@@ -107,7 +119,12 @@ const Form = ({ currentId, setCurrentId }) => {
           label="Tags"
           fullWidth
           value={tags}
-          onChange={(e) => setExerciseData({ ...exerciseData, tags: e.target.value.split(',') })}
+          onChange={(e) =>
+            setExerciseData({
+              ...exerciseData,
+              tags: e.target.value.split(","),
+            })
+          }
         />
         <Button
           className={classes.buttonSubmit}
@@ -121,7 +138,7 @@ const Form = ({ currentId, setCurrentId }) => {
         </Button>
         <Button
           variant="contained"
-          color="secondary"
+          className={classes.buttonClear}
           size="small"
           onClick={clear}
           fullWidth

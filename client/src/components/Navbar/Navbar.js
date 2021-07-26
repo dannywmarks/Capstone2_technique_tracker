@@ -4,6 +4,9 @@ import { AppBar, Typography, Toolbar, Button, Avatar } from "@material-ui/core";
 import useStyles from "./styles";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import * as actionType from "../../constants/actionTypes";
+import decode from "jwt-decode";
+import ProfileIcon from '@material-ui/icons/Person'
+import Icon from '../../assets/Gracie_Fighter_logo.jpg'
 
 const Navbar = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
@@ -11,8 +14,6 @@ const Navbar = () => {
   const history = useHistory();
   const location = useLocation();
   const classes = useStyles();
-
-  console.log(user)
 
   const logout = () => {
     dispatch({ type: actionType.LOGOUT });
@@ -23,6 +24,11 @@ const Navbar = () => {
   useEffect(() => {
     const token = user?.token;
 
+    if (token) {
+      const decodedToken = decode(token);
+
+      if (decodedToken.exp * 1000 < new Date().getTime()) logout();
+    }
     //JWT
     setUser(JSON.parse(localStorage.getItem("profile")));
   }, [location]);
@@ -30,6 +36,7 @@ const Navbar = () => {
   return (
     <AppBar className={classes.appBar} position="static" color="inherit">
       <div className={classes.brandContainer}>
+      <img className={classes.image} src={Icon} alt="icon" height="100" />
         <Typography
           component={Link}
           to="/"
@@ -37,9 +44,9 @@ const Navbar = () => {
           variant="h2"
           align="center"
         >
-          ME
+          GAME
         </Typography>
-        <img className={classes.image} src="" alt="icon" height="60" />
+       
       </div>
       <Toolbar className={classes.toolbar}>
         {user?.result ? (
@@ -67,8 +74,10 @@ const Navbar = () => {
           <Button
             component={Link}
             to="/auth"
-            variant="contained"
             color="primary"
+            variant="outlined"
+            className={classes.signIn}
+            startIcon={<ProfileIcon/>}
           >
             Sign In
           </Button>

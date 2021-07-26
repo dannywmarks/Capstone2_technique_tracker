@@ -3,9 +3,22 @@ const mongoose = require("mongoose");
 
 // Get all exercises
 const getExercises = async (req, res) => {
+  const { page } = req.query;
   try {
-    const exercises = await Exercise.find();
-    res.status(200).json(exercises);
+    const LIMIT = 8;
+    const startIndex = (Number(page) - 1) * LIMIT; // get starting index{
+    const total = await Exercise.countDocuments({});
+
+    const exercises = await Exercise.find()
+      .sort({ _id: -1 })
+      .limit(LIMIT)
+      .skip(startIndex);
+
+    res.status(200).json({
+      data: exercises,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(total / LIMIT),
+    });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -23,14 +36,12 @@ const getExercise = async (req, res) => {
 
 // Add a single exercise
 const addExercise = async (req, res) => {
-  const { exercise_name, description, reps, link, tags } = req.body;
-
+  const exercise = req.body;
+  console.log(req.userId);
   const newExercise = new Exercise({
-    exercise_name,
-    description,
-    reps,
-    link,
-    tags,
+    ...exercise,
+    creator: req.userId,
+    createdAt: new Date().toISOString(),
   });
 
   try {
@@ -60,7 +71,7 @@ const updateExercise = async (req, res) => {
 
   await Exercise.findByIdAndUpdate(id, updatedExercise, {
     new: true,
-    // useFindAndModify: false,
+    useFindAndModify: false,
   });
 
   res.json(updatedExercise);
@@ -73,9 +84,41 @@ const deleteExercise = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No exercise with id: ${id}`);
 
-  await Exercise.findByIdAndRemove(id);
+  await Exercise.findByIdAndRemove(id, { useFindAndModify: false });
 
   res.json({ message: "Exercise deleted successfully." });
+};
+
+// Search Exercise by Query
+const getExercisesBySearch = async (req, res) => {
+  const { searchQuery, tags } = req.query;
+
+  try {
+    const exercise_name = new RegExp(searchQuery, "i");
+
+    const exercises = await Exercise.find({
+      $or: [{ exercise_name }, { tags: { $in: tags.split(",") } }],
+    });
+    console.log(exercises);
+    res.json({ data: exercises });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+const commentExercise = async (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+
+  const exercise = await Exercise.findById(id);
+  
+  exercise.comments.push(comment);
+
+  const updatedExercise = await Exercise.findByIdAndUpdate(id, exercise, {
+    new: true,
+  });
+
+  return res.json(updatedExercise);
 };
 
 module.exports = {
@@ -84,4 +127,6 @@ module.exports = {
   addExercise,
   updateExercise,
   deleteExercise,
+  getExercisesBySearch,
+  commentExercise,
 };
