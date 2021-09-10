@@ -26,7 +26,8 @@ const getUser = async (req, res) => {
 
 const signUpUser = async (req, res) => {
   const { email, password, confirmPassword, firstName, lastName } = req.body;
-
+  
+  console.log(email)
   try {
     const oldUser = await User.findOne({ email });
     if (oldUser) return res.status(404).json({ message: "User already exist" });
@@ -34,7 +35,8 @@ const signUpUser = async (req, res) => {
     if (password !== confirmPassword)
       return res.status(404).json({ message: "Passwords don't match" });
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 13);
+    console.log(hashedPassword)
     const result = await User.create({
       email,
       password: hashedPassword,

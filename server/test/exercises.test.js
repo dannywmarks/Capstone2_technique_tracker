@@ -1,32 +1,29 @@
-process.env.NODE_ENV = "test";
+
 // node --inspect-brk $(which jest) --runInBand NAME_OF_FILE
 
-const request = require("supertest");
+// const request = require("supertest");
 
-const app = require("../app");
-const mongoose = require("mongoose");
+// const app = require("../app");
 
-const databaseName = "test";
+const { setupDB } = require("../test/test-setup")
 
-beforeEach(async function () {
-  const url = `mongodb://127.0.0.1/${databaseName}`;
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-});
 
-afterEach(function () {
-  // makes sure this *mutates*, not redefines, `cats`
-});
-
-afterAll(() => mongoose.disconnect());
+//Setup a Test Database 
+setupDB("endpoint-testing")
 
 describe("GET /exercises", () => {
-  test("Get all exercises", async () => {
-    const response = await request(app).get("/exercises");
-    expect(response.statusCode).toBe(200);
-    // expect(response.body).toEqual({ exercise_name: ["Burpees"] });
+  // test("Get all exercises", async () => {
+  //   const response = await request(app).get("/exercises");
+  //   expect(response.statusCode).toBe(200);
+  //   // expect(response.body).toEqual({ exercise_name: ["Burpees"] });
+  // });
+  it("Gets the test endpoint", async done => {
+    // Sends GET Request to /test endpoint
+    const res = await request.get("/test");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBe({message: "pass!"});
+    // ...
+    done();
   });
 });
 

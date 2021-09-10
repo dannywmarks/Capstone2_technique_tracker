@@ -44,7 +44,7 @@ const Navbar = () => {
           variant="h2"
           align="center"
         >
-          GAME
+          Technique Tracker
         </Typography>
        
       </div>

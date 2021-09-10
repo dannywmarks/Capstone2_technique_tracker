@@ -22,6 +22,10 @@ app.get("/", (req, res, next) => {
   res.status(200).json({ ping: "pong" });
 });
 
+app.get("/test", async (req, res) => {
+  res.json({ message: "pass!" });
+});
+
 // connection URI
 // const uri = process.env.MONGODB_URI;
 // mongoose.connect(uri, {
